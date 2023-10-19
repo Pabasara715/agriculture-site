@@ -3,8 +3,26 @@ import { Link } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import "../App.css";
 import logoimage from "../data/logo.png";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
 function Login() {
+  const initialValues = {
+    username: "",
+    password: "",
+  };
+  const validationSchema = Yup.object().shape({
+    username: Yup.string().required("Username is required"),
+    password: Yup.string().required("Password is required"),
+  });
+  const onSubmit = (formData) => {
+    axios
+      .post("http://localhost:3001/auth/login", formData)
+      .then((response) => {
+        console.log(formData);
+      });
+  };
   return (
     <div className="login-page">
       <div className="min-h-screen flex items-center justify-center my-auto">
@@ -31,44 +49,62 @@ function Login() {
           <h2 className="text-2xl font-extrabold text-green-600 text-center mt-10 mb-16">
             LOGIN
           </h2>
-          <form className="text-center items-center">
-            <div className="mb-6 text-center">
-              <label className="block text-sm my-4 mt-5 font-extrabold text-gray-700">
-                Username
-              </label>
-              <input
-                type="text"
-                className="glass-morph-box  lg:w-96 sm:w-full mb-4 border-2 border-gray-300 p-2  focus:outline-none focus:border-green-500"
-                placeholder="Enter your username"
-              />
-            </div>
-            <div className="mb-6 text-center">
-              <label className="block text-sm my-4 mt-5 font-extrabold text-gray-700">
-                Password
-              </label>
-              <input
-                type="password"
-                className="glass-morph-box  lg:w-96 mb-10 sm:w-full border-2 border-gray-300 p-2  focus:outline-none focus:border-green-500"
-                placeholder="Enter your password"
-              />
-            </div>
-            <div className="text-center">
-              <button
-                type="submit"
-                className="lg:w-96 sm:w-full mt-10 bg-green-400 text-white p-2 rounded-lg hover:bg-green-600 focus:outline-none focus:bg-green-500"
-              >
-                Log In
-              </button>
-            </div>
-            <div className="text-center">
-              <Link
-                to="/registration"
-                className="block mt-4 lg:w-96 sm:w-full mx-auto text-center bg-green-400 text-white p-2 rounded-lg hover:bg-green-600 focus:outline-none focus:bg-green-500"
-              >
-                Register
-              </Link>
-            </div>
-          </form>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
+          >
+            <Form className="text-center items-center">
+              <div className="mb-6 text-center">
+                <label className="block text-sm my-4 mt-5 font-extrabold text-gray-700">
+                  Username
+                </label>
+                <Field
+                  type="text"
+                  name="username"
+                  className="glass-morph-box  lg:w-96 sm:w-full mb-4 border-2 border-gray-300 p-2  focus:outline-none focus:border-green-500"
+                  placeholder="Enter your username"
+                />
+                <ErrorMessage
+                  name="username"
+                  component="div"
+                  className="text-red-500 text-sm"
+                />
+              </div>
+              <div className="mb-6 text-center">
+                <label className="block text-sm my-4 mt-5 font-extrabold text-gray-700">
+                  Password
+                </label>
+                <Field
+                  type="password"
+                  name="password"
+                  className="glass-morph-box  lg:w-96 mb-10 sm:w-full border-2 border-gray-300 p-2  focus:outline-none focus:border-green-500"
+                  placeholder="Enter your password"
+                />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm"
+                />
+              </div>
+              <div className="text-center">
+                <button
+                  type="submit"
+                  className="lg:w-96 sm:w-full mt-10 bg-green-400 text-white p-2 rounded-lg hover:bg-green-600 focus:outline-none focus:bg-green-500"
+                >
+                  Log In
+                </button>
+              </div>
+              <div className="text-center">
+                <Link
+                  to="/registration"
+                  className="block mt-4 lg:w-96 sm:w-full mx-auto text-center bg-green-400 text-white p-2 rounded-lg hover:bg-green-600 focus:outline-none focus:bg-green-500"
+                >
+                  Register
+                </Link>
+              </div>
+            </Form>
+          </Formik>
         </div>
       </div>
     </div>
