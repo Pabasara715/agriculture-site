@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 import { SnackbarProvider, enqueueSnackbar } from "notistack";
 import { FaPlusCircle } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "bg-gray-900",
@@ -24,6 +25,22 @@ const Item = styled(Paper)(({ theme }) => ({
 function OrderRequest() {
   const [listofvegetable, setlistofvegetable] = useState([]);
   const [shouldFetchData, setShouldFetchData] = useState(false);
+  const location = useLocation();
+  const isFromLogin = location.state && location.state.fromLogin;
+
+  const searchParams = new URLSearchParams(location.search);
+  const username = searchParams.get("username");
+
+  useEffect(() => {
+    if (isFromLogin) {
+      enqueueSnackbar("Successfully logged in", {
+        variant: "success",
+        style: {
+          fontSize: "20px",
+        },
+      });
+    }
+  }, [isFromLogin]);
 
   const columns = [
     {
@@ -64,9 +81,17 @@ function OrderRequest() {
                 setShouldFetchData(true);
                 enqueueSnackbar("Data Deleted successfully", {
                   variant: "success",
+                  style: {
+                    fontSize: "20px",
+                  },
                 });
               } else {
-                enqueueSnackbar("Failed to delete data", { variant: "error" });
+                enqueueSnackbar("Failed to delete data", {
+                  variant: "error",
+                  style: {
+                    fontSize: "20px",
+                  },
+                });
               }
             })
             .catch((error) => {
@@ -106,9 +131,19 @@ function OrderRequest() {
       selectedqty === "" ||
       selectedValue === "Select A Vegetable to show more"
     ) {
-      enqueueSnackbar("Select both vegetable and the", { variant: "warning" });
+      enqueueSnackbar("Select both vegetable and the", {
+        variant: "warning",
+        style: {
+          fontSize: "20px",
+        },
+      });
     } else {
-      enqueueSnackbar("Row added successfully", { variant: "success" });
+      enqueueSnackbar("Row added successfully", {
+        variant: "success",
+        style: {
+          fontSize: "20px",
+        },
+      });
 
       axios
         .post("http://localhost:3001/orderdata", {
@@ -135,6 +170,9 @@ function OrderRequest() {
       // Show a warning notification if the list is empty
       enqueueSnackbar("Add vegetables before proceeding to payment", {
         variant: "warning",
+        style: {
+          fontSize: "20px",
+        },
       });
     } else {
       axios
@@ -142,6 +180,7 @@ function OrderRequest() {
           orderid: `${orderid}`,
           orderdate: `${year}-${month}-${day}`,
           totalprice: total,
+          username: `${username}`,
         })
         .then((response) => {
           console.log({ year } - { month } - { day });
@@ -151,97 +190,106 @@ function OrderRequest() {
       console.log(orderid);
 
       setShouldFetchData(true);
-      enqueueSnackbar("Payment completed", { variant: "success" });
+      enqueueSnackbar("Payment completed", {
+        variant: "success",
+        style: {
+          fontSize: "20px",
+        },
+      });
     }
   };
 
   const total = listofvegetable.reduce((acc, item) => {
-    // Parse qty as a number, assuming it's a string
     const qty = item.qty;
-    // Parse quantity as a number, assuming it's a string
     const price = item.unitprice;
 
-    // If both qty and quantity are valid numbers, add their product to the accumulator (acc)
     if (!isNaN(qty) && !isNaN(price)) {
       return acc + qty * price;
     }
     console.log("qty:", qty);
     console.log("quantity:", price);
-    // If either qty or quantity is not a valid number, don't add it to the total
+
     return acc;
   }, 0);
 
   console.log("Total:", total);
 
   return (
-    <div className="grid grid-cols-2 p-10 my-0 h-full   place-content-evenly">
-      <div className=" grid grid-rows-10  gap-4 ">
-        <div className="static grid  grid-cols-2  grid-flow-col gap-4 z-50">
-          <SnackbarProvider />
-          <Dropdown setSelectedValue_D={setSelectedValue_D} />
-          <Dropdownqty setSelectedqty={setSelectedqty} />
-        </div>
+    <SnackbarProvider
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      maxSnack={3}
+    >
+      <div className="grid grid-cols-2 p-10 my-0 h-full   place-content-evenly">
+        <div className=" grid grid-rows-10  gap-4 ">
+          <div className="static grid  grid-cols-2  grid-flow-col gap-4 z-50">
+            <Dropdown setSelectedValue_D={setSelectedValue_D} />
+            <Dropdownqty setSelectedqty={setSelectedqty} />
+          </div>
 
-        <div className="relative top-10 pl-8 h-10 grid grid-cols-2  mt-20">
-          {selectedValue !== "Select A Vegetable to show more" && (
-            <div className="p-4 bg-white shadow-md rounded-md">
-              <Detailcard
-                selectedValue={selectedValue}
-                setunitprice={setunitprice}
-              />
+          <div className="relative top-10 pl-8 h-10 grid grid-cols-2  mt-20">
+            {selectedValue !== "Select A Vegetable to show more" && (
+              <div className="p-4 bg-white shadow-md rounded-md">
+                <Detailcard
+                  selectedValue={selectedValue}
+                  setunitprice={setunitprice}
+                />
+              </div>
+            )}
+
+            <div className="relative bottom-10 flex justify-end m-10">
+              {selectedValue !== "Select A Vegetable to show more" && (
+                <button
+                  onClick={addRow}
+                  className="bg-green-400 hover:bg-green-700 h-12 w-36 flex items-center justify-center text-lg rounded-lg tracking-wide border-4 text-white shadow-md border-transparent active:border-white float-left"
+                >
+                  <FaPlusCircle className="text-lg mr-2" />
+                  Add
+                </button>
+              )}
             </div>
-          )}
+          </div>
 
-          <div className="relative bottom-10 flex justify-end m-10">
+          <div className="relative pl-8 mt-20 font-bold text-2xl ">
+            {listofvegetable.length > 0 ? `Total = Rs.${total}/=` : null}
+          </div>
+
+          <div className="flex justify-end m-10">
             {selectedValue !== "Select A Vegetable to show more" && (
               <button
-                onClick={addRow}
-                className="bg-green-400 hover:bg-green-700 h-12 w-36 flex items-center justify-center text-lg rounded-lg tracking-wide border-4 text-white shadow-md border-transparent active:border-white float-left"
+                onClick={newid}
+                className="fixed bg-green-400 hover:bg-green-700 h-12 w-80 flex items-center justify-center text-lg rounded-lg tracking-wide border-4 text-white border-transparent active:border-white"
               >
-                <FaPlusCircle className="text-lg mr-2" />
-                Add
+                <FaArrowRight className="text-lg mr-2" />
+                Proceed
               </button>
             )}
           </div>
         </div>
 
-        <div className="relative pl-8 mt-20 font-bold text-2xl ">
-          {listofvegetable.length > 0 ? `Total = Rs.${total}/=` : null}
-        </div>
-
-        <div className="flex justify-end m-10">
-          {selectedValue !== "Select A Vegetable to show more" && (
-            <button
-              onClick={newid}
-              className="fixed bg-green-400 hover:bg-green-700 h-12 w-80 flex items-center justify-center text-lg rounded-lg tracking-wide border-4 text-white border-transparent active:border-white"
-            >
-              <FaArrowRight className="text-lg mr-2" />
-              Proceed
-            </button>
-          )}
-        </div>
-      </div>
-
-      <Item>
-        <div className="order bg-green-100 text-black p-4 rounded shadow-md">
-          <Box sx={{ height: 800, width: "100%" }}>
-            <DataGrid
-              rows={listofvegetable}
-              columns={columns}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 10,
+        <Item>
+          <div className="order bg-green-100 text-black p-4 rounded shadow-md">
+            <Box sx={{ height: 800, width: "100%" }}>
+              <DataGrid
+                rows={listofvegetable}
+                columns={columns}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 10,
+                    },
                   },
-                },
-              }}
-              pageSizeOptions={[10]}
-              disableRowSelectionOnClick
-            />
-          </Box>
-        </div>
-      </Item>
-    </div>
+                }}
+                pageSizeOptions={[10]}
+                disableRowSelectionOnClick
+              />
+            </Box>
+          </div>
+        </Item>
+      </div>
+    </SnackbarProvider>
   );
 }
 

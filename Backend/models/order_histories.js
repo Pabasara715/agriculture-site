@@ -1,25 +1,24 @@
-module.exports = (sequelize,DataTypes)=>{
-    const order_histories = sequelize.define("order_histories",
-    {
-        orderid: {
-            type: DataTypes.UUID, // Set the data type to INTEGER
-            allowNull: false,
-             
-           
-          },
+module.exports = (sequelize, DataTypes) => {
+  const order_histories = sequelize.define("order_histories", {
+    orderid: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
 
-         orderdate :
-          {
-            type:DataTypes.DATE,
-            allowNull: false },
+    orderdate: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
 
-        totalprice : 
-        {
-            type:DataTypes.FLOAT,
-            allowNull: false },
+    totalprice: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  });
 
-
-    })
-
-    return order_histories
-}
+  return order_histories;
+};
