@@ -5,12 +5,17 @@ const bcrypt = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 
 router.post("/", async (req, res) => {
-  const { username, password, role } = req.body;
+  const { username, password } = req.body;
+  const user = await Users.findOne({ where: { username: username } });
+
+  if (user) {
+    return res.status(401).json({ error: "Username Already Exist" });
+  }
   bcrypt.hash(password, 10).then((hash) => {
     Users.create({
       username: username,
       password: hash,
-      role: role,
+      role: "Buyer",
     });
     res.json("SUCCESS");
   });
@@ -38,6 +43,7 @@ router.post("/login", async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
+        role: user.role,
       },
     });
   });

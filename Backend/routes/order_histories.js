@@ -11,6 +11,11 @@ router.get("/:id", async (req, res) => {
   res.json(orderhistories);
 });
 
+router.get("/", async (req, res) => {
+  const orderhistories = await order_histories.findAll();
+  res.json(orderhistories);
+});
+
 router.post("/", validateToken, async (req, res) => {
   const orderhistories = req.body;
   const username = req.user.username;

@@ -28,20 +28,29 @@ function Registration() {
 
   const onSubmit = (formData) => {
     console.log(formData);
-    axios.post("http://localhost:3001/auth", formData).then((response) => {
-      enqueueSnackbar(
-        "Registered successfully, You will directed to the Login page",
-        {
-          variant: "info",
-          style: {
-            fontSize: "20px",
-          },
-        }
-      );
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
-    });
+    axios
+      .post("http://localhost:3001/auth", formData)
+      .then((response) => {
+        enqueueSnackbar(
+          "Registered successfully, You will directed to the Login page",
+          {
+            variant: "info",
+            style: {
+              fontSize: "20px",
+            },
+          }
+        );
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      })
+      .catch((error) => {
+        enqueueSnackbar(`${error.response.data.error}`, { variant: "error" });
+      });
+  };
+
+  const onBack = () => {
+    navigate("/");
   };
 
   return (
@@ -103,25 +112,6 @@ function Registration() {
 
                 <div className="mb-6 text-center">
                   <label className="block text-sm font-extrabold text-gray-700">
-                    Role
-                  </label>
-                  <Field
-                    as="select"
-                    name="role"
-                    className="lg:w-96 sm:w-full opacity-70 border-2 border-gray-300 p-2 rounded-lg focus:outline-none focus:border-green-500"
-                  >
-                    <option value="Buyer">Buyer</option>
-                    <option value="Seller">Seller</option>
-                  </Field>
-                  <ErrorMessage
-                    name="role"
-                    component="div"
-                    className="text-red-500 text-sm"
-                  />
-                </div>
-
-                <div className="mb-6 text-center">
-                  <label className="block text-sm font-extrabold text-gray-700">
                     Password
                   </label>
                   <Field
@@ -160,6 +150,14 @@ function Registration() {
                     className="lg:w-96 sm:w-full bg-green-400 text-white p-2 rounded-lg hover:bg-green-600 focus:outline-none focus:bg-green-500"
                   >
                     Register
+                  </button>
+                </div>
+                <div className="text-center mt-10">
+                  <button
+                    onClick={onBack}
+                    className="lg:w-96 sm:w-full bg-green-400 text-white p-2 rounded-lg hover:bg-green-600 focus:outline-none focus:bg-green-500"
+                  >
+                    Back
                   </button>
                 </div>
               </Form>

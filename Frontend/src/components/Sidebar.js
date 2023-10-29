@@ -1,17 +1,14 @@
 import React from "react";
 import { Link, NavLink, Navigate } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
-import { MdOutlineCancel } from "react-icons/md";
-import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { useNavigate } from "react-router-dom";
-
-import { links } from "../data/dummy";
+import { useLocation } from "react-router-dom";
+import { links, links_2 } from "../data/dummy";
 import { useStateContext } from "../context/ContextProvider";
 import logoimage from "../data/logoblack.png";
 
 const Sidebar = () => {
-  const { currentColor, activeMenu, setActiveMenu, screenSize } =
-    useStateContext();
+  const { currentColor, activeMenu } = useStateContext();
   const navigate = useNavigate();
   const activeLink =
     "flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg  text-white   text-md m-2";
@@ -22,7 +19,9 @@ const Sidebar = () => {
     sessionStorage.removeItem("id");
     navigate("/");
   };
-
+  const location = useLocation();
+  const isorder = location.pathname === "/order";
+  const isproductupdate = location.pathname === "/productupdate";
   return (
     <div className="ml-3 h-screen md:overflow-hidden overflow-auto md:hover:overflow-auto pb-10">
       {activeMenu && (
@@ -38,20 +37,9 @@ const Sidebar = () => {
                 alt="Logo"
               />
             </div>
-
-            <TooltipComponent content="Menu" position="BottomCenter">
-              <button
-                type="button"
-                onClick={() => setActiveMenu(!activeMenu)}
-                style={{ color: currentColor }}
-                className="text-xl rounded-full p-3 hover:bg-light-gray mt-4 block md:hidden"
-              >
-                <MdOutlineCancel />
-              </button>
-            </TooltipComponent>
           </div>
           <div className="mt-10 ">
-            {links.map((item) => (
+            {(isorder || isproductupdate ? links_2 : links).map((item) => (
               <div key={item.title}>
                 <p className="text-gray-400 dark:text-gray-400 m-3 mt-4 uppercase">
                   {item.title}

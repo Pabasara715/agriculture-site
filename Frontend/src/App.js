@@ -6,6 +6,8 @@ import OrderHistory from "./pages/User/OrderHistory";
 import OrderRequest from "./pages/User/OrderRequest";
 import Login from "./pages/Login";
 import Registration from "./pages/Registration";
+import ProductUpdate from "./pages/Admin/ProductUpdate";
+import Order from "./pages/Admin/Order";
 
 function App() {
   const location = useLocation();
@@ -33,6 +35,8 @@ function App() {
               <Route path="/orderrequest" element={<OrderRequest />} />
               <Route path="/orderhistory" element={<OrderHistory />} />
               <Route path="/registration" element={<Registration />} />
+              <Route path="/order" element={<Order />} />
+              <Route path="/productupdate" element={<ProductUpdate />} />
             </Routes>
           </div>
         </div>

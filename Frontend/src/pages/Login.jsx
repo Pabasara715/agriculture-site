@@ -30,9 +30,16 @@ function Login() {
           sessionStorage.setItem("accessToken", response.data.accessToken);
           sessionStorage.setItem("id", response.data.user.id);
         }
-        navigate(`/OrderRequest?username=${formData.username}`, {
-          state: { fromLogin: true },
-        });
+        let role = response.data.user.role;
+        if (role === "Buyer") {
+          navigate(`/OrderRequest?username=${formData.username}`, {
+            state: { fromLogin: true },
+          });
+        } else {
+          navigate(`/order?username=${formData.username}`, {
+            state: { fromLogin: true },
+          });
+        }
       })
       .catch((error) => {
         enqueueSnackbar(`${error.response.data.error}`, { variant: "error" });
