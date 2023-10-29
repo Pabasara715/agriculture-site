@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import "../App.css";
@@ -24,6 +24,12 @@ function Login() {
     axios
       .post("http://localhost:3001/auth/login", formData)
       .then((response) => {
+        if (response.data.error) {
+          alert(response.data.accessToken.error);
+        } else {
+          sessionStorage.setItem("accessToken", response.data.accessToken);
+          sessionStorage.setItem("id", response.data.user.id);
+        }
         navigate(`/OrderRequest?username=${formData.username}`, {
           state: { fromLogin: true },
         });

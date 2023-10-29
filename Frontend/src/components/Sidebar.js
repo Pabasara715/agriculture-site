@@ -1,20 +1,27 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, Navigate } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import { useNavigate } from "react-router-dom";
 
 import { links } from "../data/dummy";
 import { useStateContext } from "../context/ContextProvider";
 import logoimage from "../data/logoblack.png";
+
 const Sidebar = () => {
   const { currentColor, activeMenu, setActiveMenu, screenSize } =
     useStateContext();
-
+  const navigate = useNavigate();
   const activeLink =
     "flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg  text-white   text-md m-2";
   const normalLink =
     "flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg text-md text-green-700 dark:text-green-200  hover:bg-green-200 m-2";
+  const logout = () => {
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("id");
+    navigate("/");
+  };
 
   return (
     <div className="ml-3 h-screen md:overflow-hidden overflow-auto md:hover:overflow-auto pb-10">
@@ -69,12 +76,13 @@ const Sidebar = () => {
           </div>
 
           <div className="absolute  mb-10 text-center bottom-0 items-center  w-60">
-            <Link to="/">
-              <button className="flex items-center w-full gap-5 pl-4 pr-4 pt-3 pb-5 rounded-lg text-red-600  border-2 border-red-600 bg-white text-md hover:text-white hover:bg-red-600 m-2">
-                <FaIcons.FaSignOutAlt />
-                <span className="capitalize">Log Out</span>
-              </button>
-            </Link>
+            <button
+              onClick={logout}
+              className="flex items-center w-full gap-5 pl-4 pr-4 pt-3 pb-5 rounded-lg text-red-600  border-2 border-red-600 bg-white text-md hover:text-white hover:bg-red-600 m-2"
+            >
+              <FaIcons.FaSignOutAlt />
+              <span className="capitalize">Log Out</span>
+            </button>
           </div>
         </>
       )}

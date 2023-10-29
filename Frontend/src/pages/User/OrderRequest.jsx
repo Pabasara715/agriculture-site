@@ -13,6 +13,7 @@ import { SnackbarProvider, enqueueSnackbar } from "notistack";
 import { FaPlusCircle } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "bg-gray-900",
@@ -27,9 +28,11 @@ function OrderRequest() {
   const [shouldFetchData, setShouldFetchData] = useState(false);
   const location = useLocation();
   const isFromLogin = location.state && location.state.fromLogin;
-
-  const searchParams = new URLSearchParams(location.search);
-  const username = searchParams.get("username");
+  let a = sessionStorage.getItem("id");
+  const navigate = useNavigate();
+  if (!a) {
+    navigate("/");
+  }
 
   useEffect(() => {
     if (isFromLogin) {
@@ -138,22 +141,32 @@ function OrderRequest() {
         },
       });
     } else {
-      enqueueSnackbar("Row added successfully", {
-        variant: "success",
-        style: {
-          fontSize: "20px",
-        },
-      });
-
       axios
-        .post("http://localhost:3001/orderdata", {
-          vegetype: `${selectedValue}`,
-          qty: selectedqty,
-          unitprice: unitprice,
-          orderid: orderid,
-        })
+        .post(
+          "http://localhost:3001/orderdata",
+          {
+            vegetype: `${selectedValue}`,
+            qty: selectedqty,
+            unitprice: unitprice,
+            orderid: orderid,
+          },
+          {
+            headers: {
+              accessToken: sessionStorage.getItem("accessToken"),
+            },
+          }
+        )
         .then((response) => {
-          console.log(selectedqty);
+          if (response.data.error) {
+            alert(response.data.error);
+          } else {
+            enqueueSnackbar("Row added successfully", {
+              variant: "success",
+              style: {
+                fontSize: "20px",
+              },
+            });
+          }
         });
 
       setShouldFetchData(true);
@@ -176,18 +189,22 @@ function OrderRequest() {
       });
     } else {
       axios
-        .post("http://localhost:3001/order_histories", {
-          orderid: `${orderid}`,
-          orderdate: `${year}-${month}-${day}`,
-          totalprice: total,
-          username: `${username}`,
-        })
-        .then((response) => {
-          console.log({ year } - { month } - { day });
-        });
+        .post(
+          "http://localhost:3001/order_histories/",
+          {
+            orderid: `${orderid}`,
+            orderdate: `${year}-${month}-${day}`,
+            totalprice: total,
+          },
+          {
+            headers: {
+              accessToken: sessionStorage.getItem("accessToken"),
+            },
+          }
+        )
+        .then((response) => {});
 
       setOrderid(uuidv4());
-      console.log(orderid);
 
       setShouldFetchData(true);
       enqueueSnackbar("Payment completed", {
@@ -206,13 +223,9 @@ function OrderRequest() {
     if (!isNaN(qty) && !isNaN(price)) {
       return acc + qty * price;
     }
-    console.log("qty:", qty);
-    console.log("quantity:", price);
 
     return acc;
   }, 0);
-
-  console.log("Total:", total);
 
   return (
     <SnackbarProvider
