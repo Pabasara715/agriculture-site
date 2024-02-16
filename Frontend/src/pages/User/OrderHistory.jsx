@@ -66,7 +66,7 @@ function OrderHistory() {
                     },
                   },
                 }}
-                pageSizeOptions={[5]}
+                pageSizeOptions={[5, 12]}
                 disableRowSelectionOnClick
               />
             </Box>

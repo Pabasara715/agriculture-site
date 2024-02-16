@@ -32,7 +32,7 @@ function Login() {
         }
         let role = response.data.user.role;
         if (role === "Buyer") {
-          navigate(`/OrderRequest?username=${formData.username}`, {
+          navigate(`/orderrequest?username=${formData.username}`, {
             state: { fromLogin: true },
           });
         } else {
