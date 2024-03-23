@@ -26,4 +26,24 @@ router.post("/", validateToken, async (req, res) => {
   res.json(orderhistories);
 });
 
+router.put("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const [updatedRowsCount, updatedOrders] = await order_histories.update(
+      { orderStatus: "completed" },
+      { where: { orderid: id } }
+    );
+
+    if (updatedRowsCount > 0) {
+      res.status(204).json({ message: "Order status updated successfully" });
+    } else {
+      res.status(404).json({ message: "Order not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 module.exports = router;
