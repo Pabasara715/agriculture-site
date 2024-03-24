@@ -74,32 +74,41 @@ function OrderRequest() {
       sortable: false,
       renderCell: (params) => {
         const handleDeleteClick = () => {
-          const orderIdToDelete = params.row.id;
-          console.log(orderIdToDelete);
+          console.log(params.row);
 
           axios
-            .delete(`http://localhost:3001/orderdata/${orderIdToDelete}`)
-            .then((response) => {
-              if (response.status === 204) {
-                setShouldFetchData(true);
-                enqueueSnackbar("Data Deleted successfully", {
-                  variant: "success",
-                  style: {
-                    fontSize: "20px",
-                  },
-                });
-              } else {
-                enqueueSnackbar("Failed to delete data", {
-                  variant: "error",
-                  style: {
-                    fontSize: "20px",
-                  },
-                });
+            .put(
+              `http://localhost:3001/vegetabledata/qtyupdate/${params.row.vegetype}`,
+              {
+                // uniteprice: newunitprice,
+                // qty: newqty,
               }
-            })
-            .catch((error) => {
-              console.error(error);
-            });
+            )
+            .then((response) => {});
+
+          // axios
+          //   .delete(`http://localhost:3001/orderdata/${orderIdToDelete}`)
+          //   .then((response) => {
+          //     if (response.status === 204) {
+          //       setShouldFetchData(true);
+          //       enqueueSnackbar("Data Deleted successfully", {
+          //         variant: "success",
+          //         style: {
+          //           fontSize: "20px",
+          //         },
+          //       });
+          //     } else {
+          //       enqueueSnackbar("Failed to delete data", {
+          //         variant: "error",
+          //         style: {
+          //           fontSize: "20px",
+          //         },
+          //       });
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     console.error(error);
+          //   });
         };
 
         return (
@@ -115,22 +124,44 @@ function OrderRequest() {
     },
   ];
 
+  const [selectedValue, setSelectedValue_D] = useState(
+    "Select A Vegetable to show more"
+  );
+
+  const [availableQty, setAvailableQty] = useState("");
   useEffect(() => {
     axios.get(`http://localhost:3001/orderdata/${orderid}`).then((response) => {
       setlistofvegetable(response.data);
       setShouldFetchData(false);
     });
-  }, [shouldFetchData]);
 
-  const [selectedValue, setSelectedValue_D] = useState(
-    "Select A Vegetable to show more"
-  );
+    axios
+      .get(`http://localhost:3001/vegetabledata/byVegeType/${selectedValue}`)
+      .then((response) => {
+        const data = response.data;
+
+        if (Array.isArray(data) && data.length > 0) {
+          setAvailableQty(data[0].qty);
+        }
+      });
+    console.log(availableQty);
+  }, [shouldFetchData, availableQty, selectedValue]);
+
   const [selectedqty, setSelectedqty] = useState("");
+
   const [unitprice, setunitprice] = useState("");
+
   const [orderid, setOrderid] = useState(uuidv4());
 
   const addRow = () => {
-    if (
+    if (selectedqty > availableQty) {
+      enqueueSnackbar("No enough Quentity Please Select Less Quentity", {
+        variant: "warning",
+        style: {
+          fontSize: "20px",
+        },
+      });
+    } else if (
       selectedqty === "" ||
       selectedValue === "Select A Vegetable to show more"
     ) {
@@ -141,35 +172,42 @@ function OrderRequest() {
         },
       });
     } else {
+      const newvalueforQty = availableQty - selectedqty;
+      console.log(newvalueforQty);
       axios
-        .post(
-          "http://localhost:3001/orderdata",
-          {
-            vegetype: `${selectedValue}`,
-            qty: selectedqty,
-            unitprice: unitprice,
-            orderid: orderid,
-          },
-          {
-            headers: {
-              accessToken: sessionStorage.getItem("accessToken"),
-            },
-          }
-        )
+        .put(`http://localhost:3001/vegetabledata/qtyupdate/${selectedValue}`, {
+          qty: newvalueforQty,
+        })
         .then((response) => {
-          if (response.data.error) {
-            alert(response.data.error);
-          } else {
-            enqueueSnackbar("Row added successfully", {
-              variant: "success",
-              style: {
-                fontSize: "20px",
+          axios
+            .post(
+              "http://localhost:3001/orderdata",
+              {
+                vegetype: `${selectedValue}`,
+                qty: selectedqty,
+                unitprice: unitprice,
+                orderid: orderid,
               },
+              {
+                headers: {
+                  accessToken: sessionStorage.getItem("accessToken"),
+                },
+              }
+            )
+            .then((response) => {
+              if (response.data.error) {
+                alert(response.data.error);
+              } else {
+                enqueueSnackbar("Row added successfully", {
+                  variant: "success",
+                  style: {
+                    fontSize: "20px",
+                  },
+                });
+              }
             });
-          }
+          setShouldFetchData(true);
         });
-
-      setShouldFetchData(true);
     }
   };
 
@@ -180,7 +218,6 @@ function OrderRequest() {
 
   const newid = () => {
     if (listofvegetable.length === 0) {
-      // Show a warning notification if the list is empty
       enqueueSnackbar("Add vegetables before proceeding to payment", {
         variant: "warning",
         style: {

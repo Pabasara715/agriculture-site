@@ -10,7 +10,6 @@ function Detailcard({ selectedValue, setunitprice }) {
       .then((response) => {
         const data = response.data;
 
-        // Ensure data is an array and not empty before accessing its properties, rendering issue fix
         if (Array.isArray(data) && data.length > 0) {
           setVegeobject(data[0]);
           setunitprice(data[0].unitprice);
