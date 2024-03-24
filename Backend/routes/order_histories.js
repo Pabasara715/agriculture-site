@@ -31,7 +31,7 @@ router.put("/:id", async (req, res) => {
     const id = req.params.id;
 
     const [updatedRowsCount, updatedOrders] = await order_histories.update(
-      { orderStatus: "completed" },
+      { orderStatus: "COMPLETED" },
       { where: { orderid: id } }
     );
 
