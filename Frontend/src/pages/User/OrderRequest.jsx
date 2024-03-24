@@ -75,40 +75,40 @@ function OrderRequest() {
       renderCell: (params) => {
         const handleDeleteClick = () => {
           console.log(params.row);
+          const orderIdToDelete = params.row.id;
 
           axios
             .put(
-              `http://localhost:3001/vegetabledata/qtyupdate/${params.row.vegetype}`,
+              `http://localhost:3001/vegetabledata/qtyondeleteupdate/${params.row.vegetype}`,
               {
-                // uniteprice: newunitprice,
-                // qty: newqty,
+                qty: params.row.qty,
               }
             )
-            .then((response) => {});
-
-          // axios
-          //   .delete(`http://localhost:3001/orderdata/${orderIdToDelete}`)
-          //   .then((response) => {
-          //     if (response.status === 204) {
-          //       setShouldFetchData(true);
-          //       enqueueSnackbar("Data Deleted successfully", {
-          //         variant: "success",
-          //         style: {
-          //           fontSize: "20px",
-          //         },
-          //       });
-          //     } else {
-          //       enqueueSnackbar("Failed to delete data", {
-          //         variant: "error",
-          //         style: {
-          //           fontSize: "20px",
-          //         },
-          //       });
-          //     }
-          //   })
-          //   .catch((error) => {
-          //     console.error(error);
-          //   });
+            .then((response) => {
+              axios
+                .delete(`http://localhost:3001/orderdata/${orderIdToDelete}`)
+                .then((response) => {
+                  if (response.status === 204) {
+                    setShouldFetchData(true);
+                    enqueueSnackbar("Data Deleted successfully", {
+                      variant: "success",
+                      style: {
+                        fontSize: "20px",
+                      },
+                    });
+                  } else {
+                    enqueueSnackbar("Failed to delete data", {
+                      variant: "error",
+                      style: {
+                        fontSize: "20px",
+                      },
+                    });
+                  }
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            });
         };
 
         return (
@@ -285,6 +285,7 @@ function OrderRequest() {
                 <Detailcard
                   selectedValue={selectedValue}
                   setunitprice={setunitprice}
+                  shoudfetch={shouldFetchData}
                 />
               </div>
             )}

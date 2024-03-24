@@ -96,4 +96,27 @@ router.put("/qtyupdate/:vegetype", async (req, res) => {
   res.json({ message: `Vegetable qty updated` });
 });
 
+router.put("/qtyondeleteupdate/:vegetype", async (req, res) => {
+  const vegetype = req.params.vegetype;
+  const { qty } = req.body;
+
+  const vegetable = await vegetabledata.findOne({
+    where: { vegetype: vegetype },
+  });
+
+  if (!vegetable) {
+    return res.status(404).json({ message: "Vegetable not found" });
+  }
+
+  const existingQty = vegetable.qty;
+  const updatedQty = existingQty + qty;
+
+  await vegetabledata.update(
+    { qty: updatedQty },
+    { where: { vegetype: vegetype } }
+  );
+
+  res.json({ message: `Vegetable qty updated` });
+});
+
 module.exports = router;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-function Detailcard({ selectedValue, setunitprice }) {
+function Detailcard({ selectedValue, setunitprice, shoudfetch }) {
   const [vegeobject, setVegeobject] = useState({});
 
   useEffect(() => {
@@ -15,7 +15,7 @@ function Detailcard({ selectedValue, setunitprice }) {
           setunitprice(data[0].unitprice);
         }
       });
-  }, [selectedValue]);
+  }, [selectedValue, shoudfetch]);
 
   return (
     <div className="grid grid-row-3 space-y-3 font-medium text-lg">
