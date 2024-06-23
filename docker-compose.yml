@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  backend:
+    build: ./Backend
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    environment:
+      NODE_ENV: production
+      DATABASE_HOST: db
+      DATABASE_USER: root
+      DATABASE_PASSWORD: luzifer715
+      DATABASE_NAME: agriculture
+   
+
+  frontend:
+    build: ./Frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_BACKEND_URL: http://backend:3001
+    
+
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: luzifer715
+      MYSQL_DATABASE: agriculture
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
