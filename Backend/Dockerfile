@@ -16,9 +16,14 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# Install bash
+RUN apk update && apk add bash
+
+RUN chmod +x wait-for-it.sh
+
 RUN npm rebuild bcrypt --build-from-source
 
 EXPOSE 3001
 
-CMD ["npm", "start"]
+CMD ["./wait-for-it.sh", "host.docker.internal:3306", "--", "npm", "start"]
 
