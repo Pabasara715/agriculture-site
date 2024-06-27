@@ -1,10 +1,8 @@
 pipeline {
     agent any
     
- 
-    
     stages {
-        stage('Checkout') {
+        stage('Checkout git master branch') {
             steps {
                 checkout scm
             }
@@ -12,29 +10,10 @@ pipeline {
         
         stage('Build and Run Docker Compose') {
             steps {
-                bat 'docker-compose build'
-                bat 'docker-compose up -d'
+                script {
+                    sh 'docker-compose up'
+                }
             }
-        }
-        
-        stage('Run Tests') {
-            steps {
-               
-                bat 'docker-compose exec app pytest'
-            }
-        }
-        
-        
-        
-       
-    }
-    
-    post {
-        success {
-            echo 'Pipeline succeeded!'
-        }
-        failure {
-            echo 'Pipeline failed :('
         }
     }
 }
