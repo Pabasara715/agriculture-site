@@ -6,7 +6,9 @@ app.use(express.json());
 app.use(cors());
 
 const db = require("./models");
-
+process.on("uncaughtException", function (err) {
+  console.log(err);
+});
 //Routers
 const vegetabledateRouter = require("./routes/vegetabledata");
 app.use("/vegetabledata", vegetabledateRouter);
