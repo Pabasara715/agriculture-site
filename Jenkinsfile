@@ -1,19 +1,35 @@
 pipeline {
     agent any
     
+    environment {
+        DOCKER_HOST = 'tcp://localhost:2375' // Docker host address
+    }
+    
     stages {
-        stage('Checkout git master branch') {
+        stage('Checkout') {
             steps {
-                checkout scm
+                bat 'git clone https://github.com/Pabasara715/agriculture-site.git'
             }
         }
         
         stage('Build and Run Docker Compose') {
             steps {
-                script {
-                    sh 'docker-compose up'
-                }
+                bat 'docker-compose build'
+                bat 'docker-compose up -d'
             }
+        }
+        
+      
+        
+       
+    }
+    
+    post {
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed :('
         }
     }
 }
