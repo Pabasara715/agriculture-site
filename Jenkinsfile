@@ -2,13 +2,13 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_HOST = 'tcp://localhost:2375' // Docker host address
+        DOCKER_HOST = 'npipe://./pipe/docker_engine'  
     }
     
     stages {
         stage('Checkout') {
             steps {
-                bat 'git clone https://github.com/Pabasara715/agriculture-site.git'
+                checkout scm
             }
         }
         
@@ -19,7 +19,14 @@ pipeline {
             }
         }
         
-      
+        stage('Run Tests') {
+            steps {
+               
+                bat 'docker-compose exec app pytest'
+            }
+        }
+        
+        
         
        
     }
