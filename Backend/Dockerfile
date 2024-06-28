@@ -2,7 +2,7 @@ FROM node:17-alpine
 
 RUN apk update && apk upgrade && apk add --no-cache --virtual .build-deps python3 make g++
 
-RUN adduser --disabled-password --shell /bin/bash nodeuser
+RUN adduser --disabled-password --shell /bin/sh nodeuser
 
 WORKDIR /app
 
