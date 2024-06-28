@@ -17,7 +17,7 @@ RUN apk update && apk add bash
 
 RUN chmod +x wait-for-it.sh
 
-RUN npm install --save bcryptjs
+RUN su -c 'npm rebuild bcrypt --build-from-source'
 
 EXPOSE 3001
 
