@@ -4,6 +4,9 @@ RUN apk update && apk upgrade && apk add --no-cache --virtual .build-deps python
 
 RUN adduser --disabled-password --shell /bin/sh nodeuser
 
+# Change ownership of /app directory to nodeuser
+RUN chown -R nodeuser:nodeuser /app
+
 WORKDIR /app
 
 COPY package.json ./
