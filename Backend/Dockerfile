@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --save bcryptjs  # Install bcryptjs
+RUN npm install --save bcryptjs 
 
 COPY . .
 
