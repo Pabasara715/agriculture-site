@@ -4,6 +4,9 @@ RUN apk add --no-cache python3 make g++
 
 RUN npm install -g nodemon
 
+# Install node-pre-gyp globally (less secure)
+RUN npm install --global --prefix /usr/local/lib/node_modules node-pre-gyp
+
 WORKDIR /app
 
 COPY package*.json ./
@@ -12,15 +15,16 @@ RUN npm install
 
 COPY . .
 
+# Install bash
 RUN apk update && apk add bash
 
 RUN chmod +x wait-for-it.sh
 
-RUN adduser --disabled-password --shell /bin/sh nodeuser  # Create user (less secure)
-RUN chown -R nodeuser:nodeuser /app  # Change ownership of /app directory
+# Create user and change ownership
+RUN adduser --disabled-password --shell /bin/sh nodeuser
+RUN chown -R nodeuser:nodeuser /app
 
-
-RUN su nodeuser -c 'npm rebuild bcrypt --build-from-source'  # Rebuild using nodeuser
+RUN su nodeuser -c 'npm rebuild bcrypt --build-from-source'
 
 EXPOSE 3001
 
