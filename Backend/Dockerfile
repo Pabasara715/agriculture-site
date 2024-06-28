@@ -1,12 +1,8 @@
-
 FROM node:17-alpine
-
 
 RUN apk update && apk upgrade && apk add --no-cache --virtual .build-deps python3 make g++
 
-
-RUN adduser -S nodeuser
-
+RUN adduser --disabled-password --shell /bin/bash nodeuser
 
 WORKDIR /app
 
@@ -16,8 +12,7 @@ RUN su nodeuser -c 'npm install'
 
 COPY . .
 
-RUN npm install --save bcryptjs
-
+RUN su -c 'npm rebuild bcrypt --build-from-source'
 
 EXPOSE 8000
 
