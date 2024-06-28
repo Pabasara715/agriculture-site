@@ -1,22 +1,25 @@
 FROM node:17-alpine
 
-RUN apk update && apk upgrade && apk add --no-cache --virtual .build-deps python3 make g++
+RUN apk add --no-cache python3 make g++
 
-RUN adduser --disabled-password --shell /bin/sh nodeuser
-
-# Change ownership of /app directory to nodeuser
-RUN chown -R nodeuser:nodeuser /app
+RUN npm install -g nodemon
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package*.json ./
 
-RUN su nodeuser -c 'npm install'
+RUN npm install
 
 COPY . .
 
-RUN su -c 'npm rebuild bcrypt --build-from-source'
+# Install bash
+RUN apk update && apk add bash
 
-EXPOSE 8000
+RUN chmod +x wait-for-it.sh
 
-CMD ["npm", "start"]
+RUN npm rebuild bcrypt --build-from-source
+
+EXPOSE 3001
+
+CMD ["./wait-for-it.sh", "host.docker.internal:3306", "--", "npm", "start"]
+
