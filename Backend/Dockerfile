@@ -17,9 +17,8 @@ RUN apk update && apk add bash
 
 RUN chmod +x wait-for-it.sh
 
-RUN npm rebuild bcrypt --build-from-source
+RUN npm install --save bcryptjs
 
 EXPOSE 3001
 
 CMD ["./wait-for-it.sh", "host.docker.internal:3306", "--", "npm", "start"]
-
