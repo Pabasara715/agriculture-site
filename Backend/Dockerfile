@@ -12,13 +12,15 @@ RUN npm install
 
 COPY . .
 
-# Install bash
 RUN apk update && apk add bash
 
 RUN chmod +x wait-for-it.sh
 
+RUN adduser --disabled-password --shell /bin/sh nodeuser  # Create user (less secure)
+RUN chown -R nodeuser:nodeuser /app  # Change ownership of /app directory
 
-RUN su -c 'npm rebuild bcrypt --build-from-source'
+
+RUN su nodeuser -c 'npm rebuild bcrypt --build-from-source'  # Rebuild using nodeuser
 
 EXPOSE 3001
 
